@@ -1206,6 +1206,86 @@ Alignment: 4
 - <a href="#prestat.dir" name="prestat.dir"></a> `dir`: [`prestat_dir`](#prestat_dir)
 When type is [`preopentype::dir`](#preopentype.dir):
 
+## <a href="#buffer" name="buffer"></a> `buffer`: `Handle`
+A memory buffer usable in a parallel context.
+
+Size: 4
+
+Alignment: 4
+
+### Supertypes
+## <a href="#buffer_size" name="buffer_size"></a> `buffer_size`: `u32`
+The size of a buffer.
+
+Size: 4
+
+Alignment: 4
+
+## <a href="#buffer_access_kind" name="buffer_access_kind"></a> `buffer_access_kind`: `Variant`
+The ways a buffer can be accessed.
+
+Size: 1
+
+Alignment: 1
+
+### Variant cases
+- <a href="#buffer_access_kind.read" name="buffer_access_kind.read"></a> `read`
+
+- <a href="#buffer_access_kind.write" name="buffer_access_kind.write"></a> `write`
+
+- <a href="#buffer_access_kind.read_write" name="buffer_access_kind.read_write"></a> `read_write`
+
+## <a href="#buffer_data" name="buffer_data"></a> `buffer_data`: `List<u8>`
+The contents of a parallel buffer. If WASI adopts a
+[canonical ABI](https://github.com/WebAssembly/interface-types/pull/132), this type would be
+replaced by `pull-buffer` and `push-buffer`.
+
+Size: 8
+
+Alignment: 4
+
+## <a href="#parallel_device" name="parallel_device"></a> `parallel_device`: `Handle`
+A device used for parallel calls.
+
+Size: 4
+
+Alignment: 4
+
+### Supertypes
+## <a href="#device_kind" name="device_kind"></a> `device_kind`: `Variant`
+The ways a buffer can be accessed.
+
+Size: 1
+
+Alignment: 1
+
+### Variant cases
+- <a href="#device_kind.CPU" name="device_kind.CPU"></a> `CPU`
+
+- <a href="#device_kind.DISCRETE_GPU" name="device_kind.DISCRETE_GPU"></a> `DISCRETE_GPU`
+
+- <a href="#device_kind.INTEGRATED_GPU" name="device_kind.INTEGRATED_GPU"></a> `INTEGRATED_GPU`
+
+## <a href="#function" name="function"></a> `function`: `u32`
+The kernel to run in parallel. TODO It is unclear how to represent this as a `funcref`, which
+itself may not be the final mechanism for identifying which kernel to run.
+
+Size: 4
+
+Alignment: 4
+
+## <a href="#par_errno" name="par_errno"></a> `par_errno`: `Variant`
+Error codes returned by functions in this API. This is prefixed to avoid conflicts with the
+`$errno` in `typenames.witx`.
+
+Size: 1
+
+Alignment: 1
+
+### Variant cases
+- <a href="#par_errno.success" name="par_errno.success"></a> `success`
+No error occurred.
+
 # Modules
 ## <a href="#wasi_ephemeral_args" name="wasi_ephemeral_args"></a> wasi_ephemeral_args
 ### Imports
@@ -2351,6 +2431,146 @@ The path to a file to unlink.
 - <a href="#unlink_file.error.ok" name="unlink_file.error.ok"></a> `ok`
 
 - <a href="#unlink_file.error.err" name="unlink_file.error.err"></a> `err`: [`errno`](#errno)
+
+## <a href="#wasi_ephemeral_parallel" name="wasi_ephemeral_parallel"></a> wasi_ephemeral_parallel
+### Imports
+### Functions
+
+---
+
+#### <a href="#get_device" name="get_device"></a> `get_device(hint: device_kind) -> Result<device, par_errno>`
+Retrieve a a system device using a hint.
+
+##### Params
+- <a href="#get_device.hint" name="get_device.hint"></a> `hint`: [`device_kind`](#device_kind)
+A hint indicating what kind of device is expected; the implementation may choose to ignore
+the hint and return any kind of device.
+
+##### Results
+- <a href="#get_device.device" name="get_device.device"></a> `device`: `Result<device, par_errno>`
+
+###### Variant Layout
+- size: 16
+- align: 8
+- tag_size: 4
+###### Variant cases
+- <a href="#get_device.device.ok" name="get_device.device.ok"></a> `ok`: [`device`](#device)
+
+- <a href="#get_device.device.err" name="get_device.device.err"></a> `err`: [`par_errno`](#par_errno)
+
+
+---
+
+#### <a href="#create_buffer" name="create_buffer"></a> `create_buffer(device: parallel_device, size: buffer_size, kind: buffer_access_kind) -> Result<buffer, par_errno>`
+Create a buffer on a device.
+
+##### Params
+- <a href="#create_buffer.device" name="create_buffer.device"></a> `device`: [`parallel_device`](#parallel_device)
+The device on which to create the buffer.
+
+- <a href="#create_buffer.size" name="create_buffer.size"></a> `size`: [`buffer_size`](#buffer_size)
+The size of the parallel buffer to create.
+
+- <a href="#create_buffer.kind" name="create_buffer.kind"></a> `kind`: [`buffer_access_kind`](#buffer_access_kind)
+The access pattern for the buffer.
+
+##### Results
+- <a href="#create_buffer.buffer" name="create_buffer.buffer"></a> `buffer`: `Result<buffer, par_errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#create_buffer.buffer.ok" name="create_buffer.buffer.ok"></a> `ok`: [`buffer`](#buffer)
+
+- <a href="#create_buffer.buffer.err" name="create_buffer.buffer.err"></a> `err`: [`par_errno`](#par_errno)
+
+
+---
+
+#### <a href="#write_buffer" name="write_buffer"></a> `write_buffer(data: buffer_data, buffer: buffer) -> Result<(), par_errno>`
+Assign bytes from local memory to the parallel buffer; the implementation may choose to copy
+or not copy the bytes.
+
+##### Params
+- <a href="#write_buffer.data" name="write_buffer.data"></a> `data`: [`buffer_data`](#buffer_data)
+The local memory to write.
+
+- <a href="#write_buffer.buffer" name="write_buffer.buffer"></a> `buffer`: [`buffer`](#buffer)
+The buffer to write into.
+
+##### Results
+- <a href="#write_buffer.error" name="write_buffer.error"></a> `error`: `Result<(), par_errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#write_buffer.error.ok" name="write_buffer.error.ok"></a> `ok`
+
+- <a href="#write_buffer.error.err" name="write_buffer.error.err"></a> `err`: [`par_errno`](#par_errno)
+
+
+---
+
+#### <a href="#read_buffer" name="read_buffer"></a> `read_buffer(buffer: buffer, data: buffer_data) -> Result<(), par_errno>`
+Retrieve bytes from a parallel buffer into local memory; the implementation may choose to copy
+or not copy the bytes.
+
+##### Params
+- <a href="#read_buffer.buffer" name="read_buffer.buffer"></a> `buffer`: [`buffer`](#buffer)
+The buffer to read from.
+
+- <a href="#read_buffer.data" name="read_buffer.data"></a> `data`: [`buffer_data`](#buffer_data)
+The local memory to write to.
+
+##### Results
+- <a href="#read_buffer.error" name="read_buffer.error"></a> `error`: `Result<(), par_errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#read_buffer.error.ok" name="read_buffer.error.ok"></a> `ok`
+
+- <a href="#read_buffer.error.err" name="read_buffer.error.err"></a> `err`: [`par_errno`](#par_errno)
+
+
+---
+
+#### <a href="#for" name="for"></a> `for(worker: function, num_threads: u32, block_size: u32, in_buffers: List<buffer>, out_buffers: List<buffer>) -> Result<(), par_errno>`
+Run a function in parallel--a "parallel for" mechanism.
+
+##### Params
+- <a href="#for.worker" name="for.worker"></a> `worker`: [`function`](#function)
+The code to run in parallel. (TODO: define $function)
+
+- <a href="#for.num_threads" name="for.num_threads"></a> `num_threads`: `u32`
+The total number of times to run the $worker function.
+
+- <a href="#for.block_size" name="for.block_size"></a> `block_size`: `u32`
+Group concurrent executions of $worker into blocks of this size.
+
+- <a href="#for.in_buffers" name="for.in_buffers"></a> `in_buffers`: `List<buffer>`
+The input buffers to this parallel work.
+
+- <a href="#for.out_buffers" name="for.out_buffers"></a> `out_buffers`: `List<buffer>`
+The output buffers for this parallel work.
+
+##### Results
+- <a href="#for.error" name="for.error"></a> `error`: `Result<(), par_errno>`
+
+###### Variant Layout
+- size: 8
+- align: 4
+- tag_size: 4
+###### Variant cases
+- <a href="#for.error.ok" name="for.error.ok"></a> `ok`
+
+- <a href="#for.error.err" name="for.error.err"></a> `err`: [`par_errno`](#par_errno)
 
 ## <a href="#wasi_ephemeral_poll" name="wasi_ephemeral_poll"></a> wasi_ephemeral_poll
 ### Imports

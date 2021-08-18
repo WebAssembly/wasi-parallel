@@ -1,0 +1,116 @@
+;; wasi-parallel.
+;;
+;; This module exposes a system's ability to run parallel looping constructs. It is designed for
+;; use on both CPU and non-CPU devices (e.g., GPU).
+;;
+;; This is a `witx` file. See [here](https://github.com/WebAssembly/WASI/tree/master/docs/witx.md)
+;; for an explanation of what that means.
+
+
+;;; A memory buffer usable in a parallel context.
+(typename $buffer (handle))
+
+;;; The size of a buffer.
+(typename $buffer_size u32)
+
+;;; The ways a buffer can be accessed.
+(typename $buffer_access_kind
+  (enum (@witx tag u8)
+    $read
+    $write
+    $read_write
+  )
+)
+
+;;; The contents of a parallel buffer. If WASI adopts a
+;;; [canonical ABI](https://github.com/WebAssembly/interface-types/pull/132), this type would be
+;;; replaced by `pull-buffer` and `push-buffer`.
+(typename $buffer_data (list u8))
+
+;;; A device used for parallel calls.
+(typename $parallel_device (handle))
+
+;;; The ways a buffer can be accessed.
+(typename $device_kind
+  (enum (@witx tag u8)
+    $CPU
+    $DISCRETE_GPU
+    $INTEGRATED_GPU
+  )
+)
+
+;;; The kernel to run in parallel. TODO It is unclear how to represent this as a `funcref`, which
+;;; itself may not be the final mechanism for identifying which kernel to run.
+(typename $function u32)
+
+;;; Error codes returned by functions in this API. This is prefixed to avoid conflicts with the
+;;; `$errno` in `typenames.witx`.
+(typename $par_errno
+  (enum (@witx tag u8)
+    ;;; No error occurred.
+    $success
+    ;;; TODO it is unclear what exact error codes should live here.
+  )
+)
+
+(module $wasi_ephemeral_parallel
+
+  ;;; Retrieve a a system device using a hint.
+  (@interface func (export "get_device")
+    ;;; A hint indicating what kind of device is expected; the implementation may choose to ignore
+    ;;; the hint and return any kind of device.
+    (param $hint $device_kind)
+
+    (result $device (expected $device (error $par_errno)))
+  )
+
+  ;;; Create a buffer on a device.
+  (@interface func (export "create_buffer")
+    ;;; The device on which to create the buffer.
+    (param $device $parallel_device)
+    ;;; The size of the parallel buffer to create.
+    (param $size $buffer_size)
+    ;;; The access pattern for the buffer.
+    (param $kind $buffer_access_kind)
+
+    (result $buffer (expected $buffer (error $par_errno)))
+  )
+
+  ;;; Assign bytes from local memory to the parallel buffer; the implementation may choose to copy
+  ;;; or not copy the bytes.
+  (@interface func (export "write_buffer")
+    ;;; The local memory to write.
+    (param $data $buffer_data)
+    ;;; The buffer to write into.
+    (param $buffer $buffer)
+
+    (result $error (expected (error $par_errno)))
+  )
+
+  ;;; Retrieve bytes from a parallel buffer into local memory; the implementation may choose to copy
+  ;;; or not copy the bytes.
+  (@interface func (export "read_buffer")
+    ;;; The buffer to read from.
+    (param $buffer $buffer)
+    ;;; The local memory to write to.
+    (param $data $buffer_data)
+
+    (result $error (expected (error $par_errno)))
+  )
+
+  ;;; Run a function in parallel--a "parallel for" mechanism.
+  (@interface func (export "for")
+    ;;; The code to run in parallel. (TODO: define $function)
+    (param $worker $function)
+    ;;; The total number of times to run the $worker function.
+    (param $num_threads u32)
+    ;;; Group concurrent executions of $worker into blocks of this size.
+    (param $block_size u32)
+    ;;; The input buffers to this parallel work.
+    (param $in_buffers (list $buffer))
+    ;;; The output buffers for this parallel work.
+    (param $out_buffers (list $buffer))
+
+    (result $error (expected (error $par_errno)))
+  )
+)

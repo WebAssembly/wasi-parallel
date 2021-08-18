@@ -9,6 +9,7 @@ cargo run -- docs $1 \
   ../../phases/ephemeral/witx/wasi_ephemeral_environ.witx \
   ../../phases/ephemeral/witx/wasi_ephemeral_fd.witx \
   ../../phases/ephemeral/witx/wasi_ephemeral_path.witx \
+  ../../phases/ephemeral/witx/wasi_ephemeral_parallel.witx \
   ../../phases/ephemeral/witx/wasi_ephemeral_poll.witx \
   ../../phases/ephemeral/witx/wasi_ephemeral_proc.witx \
   ../../phases/ephemeral/witx/wasi_ephemeral_random.witx \

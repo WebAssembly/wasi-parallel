@@ -1,5 +1,17 @@
+[wasi-parallel](https://github.com/abrown/wasi-parallel-spec) is a proposal to add a _parallel for_
+construct to WASI. It includes:
+ - an [explainer](docs/Explainer.md), diving into the rationale for this specification
+ - the proposed API in [WITX
+   form](https://github.com/abrown/wasi-parallel-spec/blob/main/phases/ephemeral/witx/wasi_ephemeral_parallel.witx)
+
+Following the [WASI proposal
+process](https://github.com/WebAssembly/WASI/blob/master/docs/Process.md), this repository is a
+logical fork of the [main WASI repo](https://github.com/WebAssembly/WASI).
+
+----
+
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4323447.svg)](https://doi.org/10.5281/zenodo.4323447)
-    
+
 # WebAssembly System Interface
 
 ![WASI](WASI.png)
