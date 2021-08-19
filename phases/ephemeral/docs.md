@@ -2541,36 +2541,36 @@ The local memory to write to.
 
 ---
 
-#### <a href="#for" name="for"></a> `for(worker: function, num_threads: u32, block_size: u32, in_buffers: List<buffer>, out_buffers: List<buffer>) -> Result<(), par_errno>`
+#### <a href="#parallel_for" name="parallel_for"></a> `parallel_for(worker: function, num_threads: u32, block_size: u32, in_buffers: List<buffer>, out_buffers: List<buffer>) -> Result<(), par_errno>`
 Run a function in parallel--a "parallel for" mechanism.
 
 ##### Params
-- <a href="#for.worker" name="for.worker"></a> `worker`: [`function`](#function)
+- <a href="#parallel_for.worker" name="parallel_for.worker"></a> `worker`: [`function`](#function)
 The code to run in parallel. (TODO: define $function)
 
-- <a href="#for.num_threads" name="for.num_threads"></a> `num_threads`: `u32`
+- <a href="#parallel_for.num_threads" name="parallel_for.num_threads"></a> `num_threads`: `u32`
 The total number of times to run the $worker function.
 
-- <a href="#for.block_size" name="for.block_size"></a> `block_size`: `u32`
+- <a href="#parallel_for.block_size" name="parallel_for.block_size"></a> `block_size`: `u32`
 Group concurrent executions of $worker into blocks of this size.
 
-- <a href="#for.in_buffers" name="for.in_buffers"></a> `in_buffers`: `List<buffer>`
+- <a href="#parallel_for.in_buffers" name="parallel_for.in_buffers"></a> `in_buffers`: `List<buffer>`
 The input buffers to this parallel work.
 
-- <a href="#for.out_buffers" name="for.out_buffers"></a> `out_buffers`: `List<buffer>`
+- <a href="#parallel_for.out_buffers" name="parallel_for.out_buffers"></a> `out_buffers`: `List<buffer>`
 The output buffers for this parallel work.
 
 ##### Results
-- <a href="#for.error" name="for.error"></a> `error`: `Result<(), par_errno>`
+- <a href="#parallel_for.error" name="parallel_for.error"></a> `error`: `Result<(), par_errno>`
 
 ###### Variant Layout
 - size: 8
 - align: 4
 - tag_size: 4
 ###### Variant cases
-- <a href="#for.error.ok" name="for.error.ok"></a> `ok`
+- <a href="#parallel_for.error.ok" name="parallel_for.error.ok"></a> `ok`
 
-- <a href="#for.error.err" name="for.error.err"></a> `err`: [`par_errno`](#par_errno)
+- <a href="#parallel_for.error.err" name="parallel_for.error.err"></a> `err`: [`par_errno`](#par_errno)
 
 ## <a href="#wasi_ephemeral_poll" name="wasi_ephemeral_poll"></a> wasi_ephemeral_poll
 ### Imports

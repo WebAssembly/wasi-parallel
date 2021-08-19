@@ -99,7 +99,7 @@
   )
 
   ;;; Run a function in parallel--a "parallel for" mechanism.
-  (@interface func (export "for")
+  (@interface func (export "parallel_for")
     ;;; The code to run in parallel. (TODO: define $function)
     (param $worker $function)
     ;;; The total number of times to run the $worker function.
