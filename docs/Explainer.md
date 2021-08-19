@@ -10,12 +10,14 @@ does not fully address the issue: many programs benefit from parallel execution 
 engines have no standard way to access this system capability (unlike browser Web Workers).
 
 ## Why WASI?
-Since parallelism is a system capability, it fits well under WASI; this proposal can make use of the
+Treating parallelism as a system capability via WASI allows parallel workloads to be offloaded to a variaty 
+of devices from CPU to GPU and fPGA; this proposal can make use of the
 [threads proposal](https://github.com/WebAssembly/threads/) atomic instructions once those are
 standardized. The WebAssembly threads proposal stops short of defining the mechanism for thread
 creation under the assumption that browsers will use Web Workers and standalone engines will
-develop a thread-creation mechanism. The _parallel for_ described by this proposal is one such
-mechanism but not the only one--e.g., WASI could also standardize a pthread-style API in the future.
+develop a thread-creation mechanism. The _parallel for_ described by this proposal is a
+mechanism that can leverage threading capability in a CPU environment, but not a substitue for it --e.g., 
+WASI could also standardize a pthread-style API in the future.
 
 ## Design Goals
 - if possible, this proposal will avoid modifications to the WebAssembly specification, instead
