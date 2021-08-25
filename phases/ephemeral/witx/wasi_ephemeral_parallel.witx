@@ -61,7 +61,7 @@
     ;;; the hint and return any kind of device.
     (param $hint $device_kind)
 
-    (result $device (expected $device (error $par_errno)))
+    (result $device (expected $parallel_device (error $par_errno)))
   )
 
   ;;; Create a buffer on a device.

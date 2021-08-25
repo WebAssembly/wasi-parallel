@@ -2438,7 +2438,7 @@ The path to a file to unlink.
 
 ---
 
-#### <a href="#get_device" name="get_device"></a> `get_device(hint: device_kind) -> Result<device, par_errno>`
+#### <a href="#get_device" name="get_device"></a> `get_device(hint: device_kind) -> Result<parallel_device, par_errno>`
 Retrieve a a system device using a hint.
 
 ##### Params
@@ -2447,14 +2447,14 @@ A hint indicating what kind of device is expected; the implementation may choose
 the hint and return any kind of device.
 
 ##### Results
-- <a href="#get_device.device" name="get_device.device"></a> `device`: `Result<device, par_errno>`
+- <a href="#get_device.device" name="get_device.device"></a> `device`: `Result<parallel_device, par_errno>`
 
 ###### Variant Layout
-- size: 16
-- align: 8
+- size: 8
+- align: 4
 - tag_size: 4
 ###### Variant cases
-- <a href="#get_device.device.ok" name="get_device.device.ok"></a> `ok`: [`device`](#device)
+- <a href="#get_device.device.ok" name="get_device.device.ok"></a> `ok`: [`parallel_device`](#parallel_device)
 
 - <a href="#get_device.device.err" name="get_device.device.err"></a> `err`: [`par_errno`](#par_errno)
 
