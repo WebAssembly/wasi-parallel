@@ -1,11 +1,11 @@
-;; wasi-parallel.
+;; `wasi-parallel` API
 ;;
-;; This module exposes a system's ability to run parallel looping constructs. It is designed for
-;; use on both CPU and non-CPU devices (e.g., GPU).
+;; This module exposes a system's ability to run parallel looping constructs.
+;; It is designed for use on both CPU and non-CPU devices (e.g., GPU).
 ;;
-;; This is a `witx` file. See [here](https://github.com/WebAssembly/WASI/tree/master/docs/witx.md)
+;; This is a `witx` file. See
+;; [here](https://github.com/WebAssembly/WASI/tree/master/docs/witx.md)
 ;; for an explanation of what that means.
-
 
 ;;; A memory buffer usable in a parallel context.
 (typename $buffer (handle))
@@ -23,14 +23,14 @@
 )
 
 ;;; The contents of a parallel buffer. If WASI adopts a
-;;; [canonical ABI](https://github.com/WebAssembly/interface-types/pull/132), this type would be
-;;; replaced by `pull-buffer` and `push-buffer`.
+;;; [canonical ABI](https://github.com/WebAssembly/interface-types/pull/132),
+;;; this type would be replaced by `pull-buffer` and `push-buffer`.
 (typename $buffer_data (list u8))
 
 ;;; A device used for parallel calls.
 (typename $parallel_device (handle))
 
-;;; The ways a buffer can be accessed.
+;;; The kinds of devices.
 (typename $device_kind
   (enum (@witx tag u8)
     $CPU
@@ -39,12 +39,8 @@
   )
 )
 
-;;; The kernel to run in parallel. TODO It is unclear how to represent this as a `funcref`, which
-;;; itself may not be the final mechanism for identifying which kernel to run.
-(typename $function u32)
-
-;;; Error codes returned by functions in this API. This is prefixed to avoid conflicts with the
-;;; `$errno` in `typenames.witx`.
+;;; Error codes returned by functions in this API. This is prefixed to avoid
+;;; conflicts with the `$errno` in `typenames.witx`.
 (typename $par_errno
   (enum (@witx tag u8)
     ;;; No error occurred.
@@ -53,12 +49,15 @@
   )
 )
 
+;;; The binary-encoded WebAssembly code of a parallel kernel.
+(typename $function (list u8))
+
 (module $wasi_ephemeral_parallel
 
-  ;;; Retrieve a a system device using a hint.
+  ;;; Retrieve a parallel device using a hint.
   (@interface func (export "get_device")
-    ;;; A hint indicating what kind of device is expected; the implementation may choose to ignore
-    ;;; the hint and return any kind of device.
+    ;;; A hint indicating what kind of device is expected; the implementation
+    ;;; may choose to ignore the hint and return any kind of device.
     (param $hint $device_kind)
 
     (result $device (expected $parallel_device (error $par_errno)))
@@ -76,8 +75,8 @@
     (result $buffer (expected $buffer (error $par_errno)))
   )
 
-  ;;; Assign bytes from local memory to the parallel buffer; the implementation may choose to copy
-  ;;; or not copy the bytes.
+  ;;; Assign bytes from local memory to the parallel buffer; the implementation
+  ;;; may choose to copy or not copy the bytes.
   (@interface func (export "write_buffer")
     ;;; The local memory to write.
     (param $data $buffer_data)
@@ -87,8 +86,8 @@
     (result $error (expected (error $par_errno)))
   )
 
-  ;;; Retrieve bytes from a parallel buffer into local memory; the implementation may choose to copy
-  ;;; or not copy the bytes.
+  ;;; Retrieve bytes from a parallel buffer into local memory; the
+  ;;; implementation may choose to copy or not copy the bytes.
   (@interface func (export "read_buffer")
     ;;; The buffer to read from.
     (param $buffer $buffer)
@@ -100,10 +99,10 @@
 
   ;;; Run a function in parallel--a "parallel for" mechanism.
   (@interface func (export "parallel_for")
-    ;;; The code to run in parallel. (TODO: define $function)
+    ;;; The code to run in parallel.
     (param $worker $function)
     ;;; The total number of times to run the $worker function.
-    (param $num_threads u32)
+    (param $num_iterations u32)
     ;;; Group concurrent executions of $worker into blocks of this size.
     (param $block_size u32)
     ;;; The input buffers to this parallel work.
