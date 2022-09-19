@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+set -e
+
+# Check that any top-level WIT files are valid; i.e., that we can generate
+# bindings from them.
+
+WITX_BINDGEN_REPOSITORY=${WITX_BINDGEN_REPOSITORY:-https://github.com/bytecodealliance/wasi}
+WITX_BINDGEN_REVISION=${WITX_BINDGEN_REVISION:-main}
+
+echo "=== Resolve 'witx-bindgen' revision ==="
+COMMIT_RESULT=$(git ls-remote --exit-code ${WITX_BINDGEN_REPOSITORY} ${WITX_BINDGEN_REVISION})
+COMMIT=$(echo ${COMMIT_RESULT} | cut -d $' ' -f 1)
+echo ${COMMIT}
+
+echo
+echo "=== Retrieve and build 'witx-bindgen' ==="
+TMP_DIR=/tmp/regenerate-bindings-${COMMIT}
+WITX_BINDGEN_EXE=${TMP_DIR}/target/release/witx-bindgen
+# Only build 'witx-bindgen' if it doesn't already exist.
+if [[ ! -f "${WITX_BINDGEN_EXE}" ]]; then
+    mkdir -p $TMP_DIR
+    pushd $TMP_DIR
+    # The following attempts to retrieve the least amount of Git history while
+    # allowing the user to pick any revision.
+    git init
+    git remote add origin ${WITX_BINDGEN_REPOSITORY}
+    git fetch --depth 1 origin ${WITX_BINDGEN_REVISION}
+    git checkout FETCH_HEAD
+    git submodule update --init --depth 1
+    cargo build --release -p witx-bindgen
+    popd
+else
+    echo "Found existing binary: ${WITX_BINDGEN_EXE}"
+fi
+
+echo
+echo "=== Generate Rust bindings from WITX ==="
+SCRIPT_DIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
+PROJECT_DIR=$(realpath ${SCRIPT_DIR}/..)
+for WITX in $(find $PROJECT_DIR -name '*.witx'); do
+    GENERATED=$(${WITX_BINDGEN_EXE} ${WITX})
+    echo "Generated ${#GENERATED} bytes from ${WITX}; set DEBUG=1 to print"
+    if [[ ${DEBUG} = "1" ]]; then
+        printf "${GENERATED}"
+        echo
+    fi
+done
