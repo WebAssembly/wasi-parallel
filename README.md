@@ -129,12 +129,12 @@ read-buffer: func(buffer: buffer) -> expected<list<u8>, error>
 There must be a way to indicate what code should be run in parallel. Several
 other designs were discarded to reach the current mechanism: a binary-encoded
 WebAssembly module that exports a `kernel` function and imports a shared
-`memory`. When invoked by `parallel-for`, this kernel is instantiated by the
+`memory`. When invoked by `parallel-exec`, this kernel is instantiated by the
 host and scheduled on the parallel device; the call returns once the parallel
 execution is complete.
 
 ```wit
-parallel-for: func(device: device, kernel: list<u8>, num-iterations: u32, block-size: u32, buffers: list<buffer>) -> expected<unit, error>
+parallel-exec: func(device: device, kernel: list<u8>, num-iterations: u32, block-size: u32, buffers: list<buffer>) -> expected<unit, error>
 ```
 
 
