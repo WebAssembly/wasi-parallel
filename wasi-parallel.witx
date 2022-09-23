@@ -33,8 +33,16 @@
 ;;; The kinds of devices.
 (typename $device_kind
   (enum (@witx tag u8)
+    ;; Run each iteration sequentially; this is useful for troubleshooting
+    ;; concurrency issues.
+    $SEQUENTIAL
+    ;; Run iterations in parallel on a CPU's multiple cores.
     $CPU
+    ;; Run iterations in parallel on a discrete GPU.
     $DISCRETE_GPU
+    ;; Run iterations in parallel on an integrated GPU; note that this variant
+    ;; is unstable--it would be preferable to simply have a single GPU device
+    ;; kind and control which GPU in some other fashion.
     $INTEGRATED_GPU
   )
 )
