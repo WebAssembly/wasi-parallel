@@ -7,7 +7,7 @@ API for parallel computation.
 
 `wasi-parallel` is currently in [Phase 1].
 
-[Phase 1]: https://github.com/WebAssembly/WASI/blob/main/Proposals.md#phase-1---feature-proposal-cg
+[Phase 1]: https://github.com/WebAssembly/WASI/blob/main/docs/Proposals.md#phase-1---feature-proposal-cg
 
 ### Champions
 
